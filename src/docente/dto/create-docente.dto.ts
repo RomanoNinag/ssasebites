@@ -1,6 +1,7 @@
 import { IsNotEmpty, IsNumber, IsString } from "class-validator";
+import { CreatePersonaDto } from "src/persona/dto/create-persona.dto";
 
-export class CreateDocenteDto {
+export class CreateDocenteDto extends CreatePersonaDto {
     @IsString()
     @IsNotEmpty()
     formacion_academica: string;
