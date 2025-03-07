@@ -23,11 +23,16 @@ export class EstudianteService {
   }
 
   async findAll() {
-    return await this.estudianteRepository.find();
+    return await this.estudianteRepository.find({
+      // relations: ['secciones'],
+    });
   }
 
   async findOne(id: number) {
-    const estudiante = await this.estudianteRepository.findOneBy({ id_persona: id });
+    const estudiante = await this.estudianteRepository.findOne({ 
+      where: {id_persona: id },
+      relations: ['secciones'],
+    });
     if (!estudiante) {
       throw new BadRequestException(`Estudiante con id ${id} no encontrado`);
     }

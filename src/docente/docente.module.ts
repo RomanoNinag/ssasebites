@@ -10,5 +10,6 @@ import { Docente } from './entities/docente.entity';
   ],
   controllers: [DocenteController],
   providers: [DocenteService],
+  exports: [DocenteService]
 })
-export class DocenteModule {}
+export class DocenteModule { }

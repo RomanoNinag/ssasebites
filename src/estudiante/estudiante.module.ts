@@ -10,5 +10,6 @@ import { Estudiante } from './entities/estudiante.entity';
   ],
   controllers: [EstudianteController],
   providers: [EstudianteService],
+  exports: [ EstudianteService ]
 })
 export class EstudianteModule {}

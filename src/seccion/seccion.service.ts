@@ -6,6 +6,7 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Materia } from 'src/materia/entities/materia.entity';
 import { MateriaService } from 'src/materia/materia.service';
+import { DocenteService } from 'src/docente/docente.service';
 
 @Injectable()
 export class SeccionService {
@@ -16,6 +17,8 @@ export class SeccionService {
 
     private readonly materiaService: MateriaService,
 
+    private readonly docenteService: DocenteService,
+
   ) { }
   async create(createSeccionDto: CreateSeccionDto) {
     try {
@@ -24,9 +27,15 @@ export class SeccionService {
         throw new BadRequestException(`Materia con id ${createSeccionDto.id_materia} no encontrada`);
       }
 
+      const docente = await this.docenteService.findOne(createSeccionDto.id_docente);
+      if (!docente) {
+        throw new BadRequestException(`Docente con id ${createSeccionDto.id_docente} no encontrada`);
+      }
+
       const seccion = this.seccionRepository.create({
         ...createSeccionDto,
-        materia
+        materia,
+        docente
       });
       return await this.seccionRepository.save(seccion);
     } catch (error) {
@@ -36,7 +45,22 @@ export class SeccionService {
 
   async findAll() {
     return await this.seccionRepository.find({
-      relations: ['materia']
+      relations: ['materia', 'docente'],
+      select: {
+        id_seccion: true,
+        anio: true,
+        periodo: true,
+        materia: {
+          id_materia: true,
+          nombre: true
+        },
+        docente: {
+          id_persona: true,
+          nombre: true,
+          paterno: true,
+          materno: true
+        }
+      }
     });
   }
 
@@ -45,7 +69,7 @@ export class SeccionService {
       where: {
         id_seccion: id,
       },
-      relations: ['materia']
+      relations: ['materia', 'docente']
 
     });
     if (!seccion) {
@@ -81,8 +105,10 @@ export class SeccionService {
   private handleDBExceptions(error) {
     console.log(error);
 
+    if (error instanceof BadRequestException) throw error;
     if (error.code === '23505') throw new BadRequestException(error.detail);
     if (error.code === '23502') throw new BadRequestException(error.detail);
+
     throw new InternalServerErrorException('Otro tipo de error de base de datos!');
   }
 }

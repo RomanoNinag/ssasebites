@@ -9,6 +9,7 @@ import { DocenteModule } from './docente/docente.module';
 import { PersonaModule } from './persona/persona.module';
 import { MateriaModule } from './materia/materia.module';
 import { SeccionModule } from './seccion/seccion.module';
+import { EstudianteEnSeccionModule } from './estudiante-en-seccion/estudiante-en-seccion.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { SeccionModule } from './seccion/seccion.module';
     PersonaModule,
     MateriaModule,
     SeccionModule,
+    EstudianteEnSeccionModule,
     
   ],
   controllers: [AppController],

@@ -1,5 +1,6 @@
 import { Persona } from "src/persona/entities/persona.entity";
-import { Column, Entity, JoinColumn, OneToOne } from "typeorm";
+import { Seccion } from "src/seccion/entities/seccion.entity";
+import { Column, Entity, JoinColumn, OneToMany, OneToOne } from "typeorm";
 
 @Entity()
 export class Docente extends Persona {
@@ -16,4 +17,7 @@ export class Docente extends Persona {
 
     })
     experiencia_docente: number;
+
+    @OneToMany(() => Seccion, (seccion) => seccion.docente)
+    secciones: Seccion[];
 }

@@ -9,4 +9,5 @@ export class Materia {
         unique: true
     })
     nombre: string;
+
 }
