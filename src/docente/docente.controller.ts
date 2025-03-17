@@ -17,6 +17,11 @@ export class DocenteController {
     return this.docenteService.findAll();
   }
 
+  @Get('/nombre')
+  findAllName() {
+    return this.docenteService.findAllName();
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.docenteService.findOne(+id);

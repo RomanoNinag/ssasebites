@@ -25,6 +25,24 @@ export class DocenteService {
     return await this.docenteRepository.find();
   }
 
+  // async findAllName() {
+  //   return await this.docenteRepository.find({
+  //     select: ['nombre', 'paterno', 'materno', 'id_persona']
+  //   });
+  // }
+
+  async findAllName() {
+    const docentes = await this.docenteRepository.find({
+      select: ['nombre', 'paterno', 'materno', 'id_persona']
+    });
+
+    return docentes.map(docente => ({
+      nombreCompleto: `${docente.nombre} ${docente.paterno} ${docente.materno}`.trim(),
+      id: docente.id_persona
+    }));
+  }
+
+
   async findOne(id: number) {
     const docente = await this.docenteRepository.findOneBy({ id_persona: id });
     if (!docente) {
