@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { EstudianteEnSeccionService } from './estudiante-en-seccion.service';
-import { CreateEstudianteEnSeccionDto } from './dto/create-estudiante-en-seccion.dto';
+import { CreateEstudianteEnSeccionDto, CreateEstudiantesEnSeccionLoteDto } from './dto/create-estudiante-en-seccion.dto';
 import { UpdateEstudianteEnSeccionDto } from './dto/update-estudiante-en-seccion.dto';
 
 @Controller('estudiante-en-seccion')
@@ -10,6 +10,10 @@ export class EstudianteEnSeccionController {
   @Post()
   create(@Body() createEstudianteEnSeccionDto: CreateEstudianteEnSeccionDto) {
     return this.estudianteEnSeccionService.create(createEstudianteEnSeccionDto);
+  }
+  @Post('lote')
+  async createMany(@Body() body: CreateEstudiantesEnSeccionLoteDto) {
+    return this.estudianteEnSeccionService.createMany(body);
   }
 
   @Get()

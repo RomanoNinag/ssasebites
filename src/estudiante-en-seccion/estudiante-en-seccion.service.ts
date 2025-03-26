@@ -1,5 +1,5 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
-import { CreateEstudianteEnSeccionDto } from './dto/create-estudiante-en-seccion.dto';
+import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { CreateEstudianteEnSeccionDto, CreateEstudiantesEnSeccionLoteDto } from './dto/create-estudiante-en-seccion.dto';
 import { UpdateEstudianteEnSeccionDto } from './dto/update-estudiante-en-seccion.dto';
 import { EstudianteService } from 'src/estudiante/estudiante.service';
 import { SeccionService } from 'src/seccion/seccion.service';
@@ -33,6 +33,38 @@ export class EstudianteEnSeccionService {
     });
 
     return await this.estudianteEnSeccionRepository.save(estudianteEnSeccion);
+  }
+
+  async createMany(createEstudiantesEnSeccionLoteDto: CreateEstudiantesEnSeccionLoteDto) {
+    try {
+      const { id_seccion, estudiantes } = createEstudiantesEnSeccionLoteDto;
+      const seccion = await this.seccionService.findOne(id_seccion);
+      if (!seccion) {
+        throw new BadRequestException(`Seccion con id ${id_seccion} no encontrada`);
+      }
+      const ids_estudiantes = estudiantes.map(e => e.id_estudiante);
+      const estudiantesEncontrados = await this.estudianteService.findByIds(ids_estudiantes);
+
+      if (estudiantes.length !== estudiantesEncontrados.length) {
+        throw new BadRequestException('Algunos estudiantes no se encontraron');
+      }
+
+      const estudiantesMap = new Map(estudiantesEncontrados.map(e => [e.id_persona, e]));
+
+      const entidades = estudiantes.map(({ id_estudiante, nota }) => {
+        return this.estudianteEnSeccionRepository.create({
+          seccion,
+          estudiante: estudiantesMap.get(id_estudiante),
+          nota_final: nota
+        })
+      }
+      );
+
+      return await this.estudianteEnSeccionRepository.save(entidades);
+
+    } catch (error) {
+      this.handleDBExceptions(error);
+    }
   }
 
   async findAll() {
@@ -70,5 +102,12 @@ export class EstudianteEnSeccionService {
 
   remove(id: number) {
     return `This action removes a #${id} estudianteEnSeccion`;
+  }
+  private handleDBExceptions(error) {
+    console.log(error);
+
+    if (error.code === '23505') throw new BadRequestException(error.detail);
+    if (error.code === '23502') throw new BadRequestException(error.detail);
+    throw new InternalServerErrorException('Otro tipo de error de base de datos!');
   }
 }

@@ -69,7 +69,7 @@ export class SeccionService {
       where: {
         id_seccion: id,
       },
-      relations: ['materia', 'docente']
+      relations: ['materia', 'docente', 'estudiantes.estudiante'],
 
     });
     if (!seccion) {

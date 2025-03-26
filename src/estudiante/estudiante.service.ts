@@ -3,7 +3,7 @@ import { CreateEstudianteDto } from './dto/create-estudiante.dto';
 import { UpdateEstudianteDto } from './dto/update-estudiante.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Estudiante } from './entities/estudiante.entity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 
 @Injectable()
 export class EstudianteService {
@@ -27,10 +27,12 @@ export class EstudianteService {
       // relations: ['secciones'],
     });
   }
-
+  async findByIds(ids: number[]) {
+    return await this.estudianteRepository.findBy({ id_persona: In(ids) });
+  }
   async findOne(id: number) {
-    const estudiante = await this.estudianteRepository.findOne({ 
-      where: {id_persona: id },
+    const estudiante = await this.estudianteRepository.findOne({
+      where: { id_persona: id },
       relations: ['secciones'],
     });
     if (!estudiante) {
